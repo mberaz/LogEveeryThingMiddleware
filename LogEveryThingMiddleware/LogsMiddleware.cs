@@ -13,8 +13,7 @@
         {
             httpContext.Request.Headers.TryGetValue("x-should-log", out var shouldLog);
 
-            //https://stackoverflow.com/questions/50747749/how-to-use-httpclienthandler-with-httpclientfactory-in-net-core
-
+           
             // Call the next delegate/middleware in the pipeline.
             await _next(httpContext);
 
