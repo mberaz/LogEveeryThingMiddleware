@@ -1,6 +1,10 @@
 @LogEveryThingMiddleware_HostAddress = http://localhost:5112
 
-GET {{LogEveryThingMiddleware_HostAddress}}/weatherforecast/
+GET {{LogEveryThingMiddleware_HostAddress}}/Demo/
 Accept: application/json
 
 ###
+
+GET {{LogEveryThingMiddleware_HostAddress}}/Demo/
+Accept: application/json
+x-should-log: true
