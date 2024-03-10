@@ -3,11 +3,11 @@ using LogEveryThingMiddleware.Trace;
 
 namespace LogEveryThingMiddleware;
 
-class SendTraceHandler : DelegatingHandler
+public class SendTraceHandler : DelegatingHandler
 {
     private readonly ILogService _logService;
 
-    public SendTraceHandler(ILogService logService)
+    public SendTraceHandler(ILogService logService): base(new HttpClientHandler())
     {
         _logService = logService;
     }
@@ -15,7 +15,6 @@ class SendTraceHandler : DelegatingHandler
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-        
         HttpResponseMessage response = await base.SendAsync(request, cancellationToken);
         var traceData = TraceStorage<TraceData>.Retrieve();
 
@@ -31,14 +30,15 @@ class SendTraceHandler : DelegatingHandler
         var logString = $"[{traceData.Level}] [{traceData.TraceId}] Sending the request :{request.Method};" +
                         $"{request.RequestUri}";
 
-
         logString += ";headers:";
         foreach (var requestHeader in request.Headers)
         {
             logString += $"{requestHeader.Key}-{requestHeader.Value}";
         }
 
-        logString += $";body:{request.Content?.ToString()}";
+        StreamReader reader = new StreamReader( request.Content?.ReadAsStream());
+        string body = reader.ReadToEnd();
+        logString += $";body:{body}";
 
         return logString;
     }

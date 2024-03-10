@@ -1,8 +1,4 @@
-﻿using System.Text.Json.Nodes;
-using LogEveryThingMiddleware.Trace;
-using Microsoft.AspNetCore.Http.Extensions;
-
-namespace LogEveryThingMiddleware.BL
+﻿namespace LogEveryThingMiddleware.BL
 {
     public class BusinessService : IBusinessService
     {
@@ -13,16 +9,13 @@ namespace LogEveryThingMiddleware.BL
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task DoStuff()
+        public async Task<bool> DoStuff()
         {
             var client = _httpClientFactory.CreateClient(ConstantNames.InternalHttpClient);
 
             HttpResponseMessage response = await client.GetAsync("http://demo.com/cool-stuff");
-            if (response.IsSuccessStatusCode)
-            {
-                string responseBody = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(responseBody);
-            }
+
+            return response.IsSuccessStatusCode;
         }
     }
 }
