@@ -37,7 +37,6 @@ namespace LogEveryThingMiddleware
 
             // Call the next delegate/middleware in the pipeline.
             await _next(httpContext);
-
         }
 
         private async Task LogRequest(HttpRequest request, string currentServiceName, TraceData traceData)

@@ -1,19 +1,12 @@
 ﻿namespace LogEveryThingMiddleware.BL
 {
-    public class BusinessService : IBusinessService
+    public class BusinessService(IHttpClientFactory httpClientFactory) : IBusinessService
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-
-        public BusinessService(IHttpClientFactory httpClientFactory)
+        public async Task<bool> DoBusinessStuff()
         {
-            _httpClientFactory = httpClientFactory;
-        }
+            var client = httpClientFactory.CreateClient(ConstantNames.InternalHttpClient);
 
-        public async Task<bool> DoStuff()
-        {
-            var client = _httpClientFactory.CreateClient(ConstantNames.InternalHttpClient);
-
-            HttpResponseMessage response = await client.GetAsync("http://demo.com/cool-stuff");
+            var response = await client.GetAsync("http://demo.com/cool-stuff");
 
             return response.IsSuccessStatusCode;
         }

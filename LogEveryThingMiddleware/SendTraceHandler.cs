@@ -7,7 +7,7 @@ public class SendTraceHandler : DelegatingHandler
 {
     private readonly ILogService _logService;
 
-    public SendTraceHandler(ILogService logService): base(new HttpClientHandler())
+    public SendTraceHandler(ILogService logService) : base(new HttpClientHandler())
     {
         _logService = logService;
     }
@@ -36,9 +36,8 @@ public class SendTraceHandler : DelegatingHandler
             logString += $"{requestHeader.Key}-{requestHeader.Value}";
         }
 
-        StreamReader reader = new StreamReader( request.Content?.ReadAsStream());
-        string body = reader.ReadToEnd();
-        logString += $";body:{body}";
+        var reader = new StreamReader(request.Content?.ReadAsStream());
+        logString += $";body:{reader.ReadToEnd()}";
 
         return logString;
     }
@@ -46,9 +45,9 @@ public class SendTraceHandler : DelegatingHandler
 
     private async Task Log(string requestString, HttpResponseMessage response)
     {
-        string responseBody = await response.Content.ReadAsStringAsync();
-
+        var responseBody = await response.Content.ReadAsStringAsync();
         var logString = $"{requestString}: Response:[{response.StatusCode}] {responseBody}";
+
         //log the string
         await _logService.Log(logString);
     }

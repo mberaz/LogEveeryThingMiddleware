@@ -2,6 +2,6 @@
 {
     public interface IBusinessService
     {
-        Task<bool>  DoStuff();
+        Task<bool>  DoBusinessStuff();
     }
 }

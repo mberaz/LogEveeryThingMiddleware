@@ -17,7 +17,7 @@ namespace LogEveryThingMiddleware.Controllers
         [HttpGet(Name = "demo")]
         public async Task<ActionResult> Get()
         {
-            await _businessService.DoStuff();
+            await _businessService.DoBusinessStuff();
             return Ok();
         }
     }
