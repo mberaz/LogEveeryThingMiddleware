@@ -10,7 +10,7 @@
             return _asyncLocal.Value;
         }
 
-        public static T Retrieve()
+        public static T? Retrieve()
         {
             return _asyncLocal.Value;
         }

@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Nodes;
+using LogEveryThingMiddleware.BL;
 using LogEveryThingMiddleware.Trace;
 using Microsoft.AspNetCore.Http.Extensions;
 
@@ -7,10 +8,12 @@ namespace LogEveryThingMiddleware
     public class LogsMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogService _logService;
 
-        public LogsMiddleware(RequestDelegate next)
+        public LogsMiddleware(RequestDelegate next, ILogService logService)
         {
             _next = next;
+            _logService = logService;
         }
 
         public async Task InvokeAsync(HttpContext httpContext )
@@ -61,7 +64,7 @@ namespace LogEveryThingMiddleware
 
 
             //log the string
-
+            await _logService.Log(logString);
         }
     }
 }

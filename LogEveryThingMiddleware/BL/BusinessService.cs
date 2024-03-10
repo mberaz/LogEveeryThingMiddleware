@@ -24,7 +24,5 @@ namespace LogEveryThingMiddleware.BL
                 Console.WriteLine(responseBody);
             }
         }
-
-     
     }
 }

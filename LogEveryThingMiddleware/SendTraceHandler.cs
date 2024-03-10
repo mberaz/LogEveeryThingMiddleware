@@ -1,13 +1,21 @@
-﻿using LogEveryThingMiddleware.Trace;
+﻿using LogEveryThingMiddleware.BL;
+using LogEveryThingMiddleware.Trace;
 
 namespace LogEveryThingMiddleware;
 
 class SendTraceHandler : DelegatingHandler
 {
- 
+    private readonly ILogService _logService;
+
+    public SendTraceHandler(ILogService logService)
+    {
+        _logService = logService;
+    }
+
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
+        
         HttpResponseMessage response = await base.SendAsync(request, cancellationToken);
         var traceData = TraceStorage<TraceData>.Retrieve();
 
@@ -42,5 +50,6 @@ class SendTraceHandler : DelegatingHandler
 
         var logString = $"{requestString}: Response:[{response.StatusCode}] {responseBody}";
         //log the string
+        await _logService.Log(logString);
     }
 }

@@ -16,6 +16,7 @@ builder.Services.AddHttpClient(ConstantNames.InternalHttpClient)
     .AddHttpMessageHandler<SendTraceHandler>();
 
 builder.Services.AddScoped<IBusinessService, BusinessService>();
+builder.Services.AddScoped<ILogService, LogService>();
 
 var app = builder.Build();
 
