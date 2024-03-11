@@ -24,11 +24,18 @@ namespace LogEveryThingMiddleware.Tests
         [TestMethod]
         public async Task SendRequest_ShouldLog()
         {
+            var traceId = Guid.NewGuid().ToString("N");
             var logService = A.Fake<ILogService>();
-            var handler = new SendTraceHandler(logService, new HttpClientHandler());
+            var handler = new SendTraceHandler(logService, 
+                new MockHeadersHandler(new Dictionary<string, string>
+            {
+                {"x-master-log-trace-id",traceId},
+                {"x-master-log-level","1"}
+            }));
+
             var client = new HttpClient(handler);
 
-            var traceId = Guid.NewGuid().ToString("N");
+
             var data = new TraceData
             {
                 TraceId = traceId,
@@ -60,6 +67,28 @@ namespace LogEveryThingMiddleware.Tests
             }
 
             return true;
+        }
+    }
+
+    class MockHeadersHandler : HttpClientHandler
+    {
+        private readonly Dictionary<string, string> _excpected;
+
+        public MockHeadersHandler(Dictionary<string, string> excpected)
+        {
+            _excpected = excpected;
+        }
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
+            CancellationToken cancellationToken)
+        {
+            foreach (var item in _excpected)
+            {
+                var headerValue = request.Headers.GetValues(item.Key);
+                Assert.AreEqual(headerValue.First(), item.Value);
+            }
+
+            return await base.SendAsync(request, cancellationToken);
         }
     }
 }

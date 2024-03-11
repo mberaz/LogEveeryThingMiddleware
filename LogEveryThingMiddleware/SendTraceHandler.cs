@@ -29,7 +29,6 @@ public class SendTraceHandler : DelegatingHandler
 
         HttpResponseMessage response = await base.SendAsync(request, cancellationToken);
 
-
         if (traceData != null)
         {
             await Log(CreateRequestString(request, traceData), response);

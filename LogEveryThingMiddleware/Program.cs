@@ -1,6 +1,5 @@
 using LogEveryThingMiddleware;
 using LogEveryThingMiddleware.BL;
-using LogEveryThingMiddleware.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 

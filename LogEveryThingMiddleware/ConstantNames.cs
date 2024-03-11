@@ -2,6 +2,6 @@
 {
     public static class ConstantNames
     {
-        public const string InternalHttpClient = "internal";
+        public const string InternalHttpClient = "internalClinet";
     }
 }
