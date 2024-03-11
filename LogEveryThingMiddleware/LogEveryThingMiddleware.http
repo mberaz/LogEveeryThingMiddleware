@@ -7,4 +7,4 @@ Accept: application/json
 
 GET {{LogEveryThingMiddleware_HostAddress}}/Demo/
 Accept: application/json
-x-should-log: true
+x-master-log-should-log: true

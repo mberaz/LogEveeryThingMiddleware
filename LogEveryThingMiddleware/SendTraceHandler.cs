@@ -7,16 +7,28 @@ public class SendTraceHandler : DelegatingHandler
 {
     private readonly ILogService _logService;
 
-    public SendTraceHandler(ILogService logService): base(new HttpClientHandler())
+    public SendTraceHandler(ILogService logService)
     {
         _logService = logService;
+    }
+
+    public SendTraceHandler(ILogService logService, HttpClientHandler innerHandler)
+    {
+        _logService = logService;
+        InnerHandler = innerHandler;
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-        HttpResponseMessage response = await base.SendAsync(request, cancellationToken);
         var traceData = TraceStorage<TraceData>.Retrieve();
+        if (traceData != null)
+        {
+            AddTraceHeadersToRequest(request, traceData);
+        }
+
+        HttpResponseMessage response = await base.SendAsync(request, cancellationToken);
+
 
         if (traceData != null)
         {
@@ -25,6 +37,13 @@ public class SendTraceHandler : DelegatingHandler
 
         return response;
     }
+
+    private void AddTraceHeadersToRequest(HttpRequestMessage request, TraceData data)
+    {
+        request.Headers.Add("x-master-log-trace-id", data.TraceId);
+        request.Headers.Add("x-master-log-level", data.Level.ToString());
+    }
+
     private string CreateRequestString(HttpRequestMessage request, TraceData traceData)
     {
         var logString = $"[{traceData.Level}] [{traceData.TraceId}] Sending the request :{request.Method};" +
@@ -36,9 +55,13 @@ public class SendTraceHandler : DelegatingHandler
             logString += $"{requestHeader.Key}-{requestHeader.Value}";
         }
 
-        StreamReader reader = new StreamReader( request.Content?.ReadAsStream());
-        string body = reader.ReadToEnd();
-        logString += $";body:{body}";
+        if (request.Content != null)
+        {
+            StreamReader reader = new StreamReader(request.Content?.ReadAsStream());
+            string body = reader.ReadToEnd();
+            logString += $";body:{body}";
+        }
+
 
         return logString;
     }

@@ -11,12 +11,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<SendTraceHandler>();
+ 
+builder.Services.AddTransient<SendTraceHandler>();
 builder.Services.AddHttpClient(ConstantNames.InternalHttpClient)
     .AddHttpMessageHandler<SendTraceHandler>();
 
 builder.Services.AddScoped<IBusinessService, BusinessService>();
-builder.Services.AddScoped<ILogService, LogService>();
+builder.Services.AddTransient<ILogService,LogService>();
 
 var app = builder.Build();
 

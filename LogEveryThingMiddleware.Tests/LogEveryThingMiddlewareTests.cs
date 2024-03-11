@@ -44,7 +44,7 @@ namespace LogEveryThingMiddleware.Tests
             };
 
             //add stuff to the request header
-            context.Request.Headers.Append("x-should-log", "true");
+            context.Request.Headers.Append("x-master-log-should-log", "true");
 
             //add data to request body
             context.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes("{\"userName\" :\"John\"}"));
@@ -54,8 +54,14 @@ namespace LogEveryThingMiddleware.Tests
 
             //Call the middleware
             await logMiddleware.InvokeAsync(context);
+            await context.Response.StartAsync();
 
-            A.CallTo(() => logService.Log(A<string>.That.Matches(x => ValidateString(x, 1, "John", "1", null))))
+            context.Response.Headers.TryGetValue("x-master-log-trace-id", out var traceIdValue);
+            context.Response.Headers.TryGetValue("x-master-log-level", out var levelValue);
+
+            Assert.AreEqual(levelValue.ToString(), "1");
+
+            A.CallTo(() => logService.Log(A<string>.That.Matches(x => ValidateString(x, 1, "John", "1", traceIdValue))))
                 .MustHaveHappened();
 
         }
@@ -75,10 +81,10 @@ namespace LogEveryThingMiddleware.Tests
             };
 
             //add stuff to the request header
-            context.Request.Headers.Append("x-should-log", "true");
-            context.Request.Headers.Append("x-should-level", "3");
+            context.Request.Headers.Append("x-master-log-should-log", "true");
+            context.Request.Headers.Append("x-master-log-level", "3");
             var traceId = Guid.NewGuid().ToString("N");
-            context.Request.Headers.Append("x-should-trace-id", traceId);
+            context.Request.Headers.Append("x-master-log-trace-id", traceId);
             //add data to request body
             context.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes("{\"userName\" :\"John\"}"));
 
@@ -87,6 +93,13 @@ namespace LogEveryThingMiddleware.Tests
 
             //Call the middleware
             await logMiddleware.InvokeAsync(context);
+            await context.Response.StartAsync();
+
+            context.Response.Headers.TryGetValue("x-master-log-trace-id", out var traceIdValue);
+            context.Response.Headers.TryGetValue("x-master-log-level", out var levelValue);
+
+            Assert.AreEqual(traceIdValue.ToString(), traceId);
+            Assert.AreEqual(levelValue.ToString(), "1");
 
             A.CallTo(() => logService.Log(A<string>.That.Matches(x => ValidateString(x, 3, "John", "1", traceId))))
                 .MustHaveHappened();

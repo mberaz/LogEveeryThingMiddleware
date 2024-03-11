@@ -12,7 +12,7 @@ namespace LogEveryThingMiddleware.Tests
         public async Task SendRequest_DoNotLog()
         {
             var logService = A.Fake<ILogService>();
-            var handler = new SendTraceHandler(logService);
+            var handler = new SendTraceHandler(logService, new HttpClientHandler());
             var client = new HttpClient(handler);
             var response = await client.SendAsync(new HttpRequestMessage
             {
@@ -25,7 +25,7 @@ namespace LogEveryThingMiddleware.Tests
         public async Task SendRequest_ShouldLog()
         {
             var logService = A.Fake<ILogService>();
-            var handler = new SendTraceHandler(logService);
+            var handler = new SendTraceHandler(logService, new HttpClientHandler());
             var client = new HttpClient(handler);
 
             var traceId = Guid.NewGuid().ToString("N");
