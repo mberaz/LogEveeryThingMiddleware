@@ -29,6 +29,7 @@ namespace LogEveryThingMiddleware.Tests
             var handler = new SendTraceHandler(logService, 
                 new MockHeadersHandler(new Dictionary<string, string>
             {
+                {"x-master-log-should-log","true"},
                 {"x-master-log-trace-id",traceId},
                 {"x-master-log-level","1"}
             }));

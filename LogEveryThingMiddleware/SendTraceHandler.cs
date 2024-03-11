@@ -39,6 +39,7 @@ public class SendTraceHandler : DelegatingHandler
 
     private void AddTraceHeadersToRequest(HttpRequestMessage request, TraceData data)
     {
+        request.Headers.Add("x-master-log-should-log", "true");
         request.Headers.Add("x-master-log-trace-id", data.TraceId);
         request.Headers.Add("x-master-log-level", data.Level.ToString());
     }
